@@ -10,21 +10,7 @@ public with sharing class CaseConfigController {
         return [SELECT Id, Label__c, Type__c, Amount__c FROM Case_Config__c WHERE Case__c = :caseId WITH SECURITY_ENFORCED];
     }
 
-    /**
-     * Adds selected Config__c records to the Case_Config__c related list.
-     * Prevents duplicate Configs from being added.
-     * @param caseId The Id of the Case.
-     * @param configIds List of selected Config__c record Ids.
-     */
-    @AuraEnabled
-    public static void addConfigsToCase(List<Case_Config__c> selectedConfig) {
-        system.System.debug('select'+ selectedConfig);
-       
-        if (selectedConfig.isEmpty()) {
-            throw new IllegalArgumentException('Invalid inputs');
-        }
-        insert selectedConfig;
-    }
+   
 
     /**
      * Sends the Case Config data to an external service and closes the Case.

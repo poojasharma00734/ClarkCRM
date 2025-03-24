@@ -1,6 +1,6 @@
 import { LightningElement, wire, track, api } from 'lwc';
 import getAvailableConfigs from '@salesforce/apex/ConfigController.getAvailableConfigs';
-import addConfigsToCase from '@salesforce/apex/CaseConfigController.addConfigsToCase';
+import addConfigsToCase from '@salesforce/apex/ConfigController.addConfigsToCase';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { RefreshEvent } from "lightning/refresh";
 
