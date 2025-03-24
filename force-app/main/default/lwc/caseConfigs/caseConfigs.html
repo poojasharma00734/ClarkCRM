@@ -1,0 +1,12 @@
+<template>
+    <lightning-card title="Case Configs">
+        <lightning-button label="Send Case Data" slot="actions" variant="brand" onclick={handleSend}></lightning-button>
+        <template if:true={configs}>
+            <lightning-datatable
+                key-field="Id"
+                data={configs}
+                columns={columns}>
+            </lightning-datatable>
+        </template>
+    </lightning-card>
+</template>
