@@ -3,7 +3,9 @@ import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
 import sendCaseData from '@salesforce/apex/CaseConfigController.sendCaseData';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
-import { registerRefreshHandler, unregisterRefreshHandler,REFRESH_ERROR,REFRESH_COMPLETE,REFRESH_COMPLETE_WITH_ERRORS } from 'lightning/refresh';
+import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import STATUS_FIELD from '@salesforce/schema/Case.Status';
+import { registerRefreshHandler, unregisterRefreshHandler} from 'lightning/refresh';
 
 export default class CaseConfigs extends LightningElement {
     @api recordId;
@@ -12,6 +14,7 @@ export default class CaseConfigs extends LightningElement {
     wiredResult;
     refreshHandlerId;
     isLoading = true;
+    @track isCaseClosed = false;
 
     // Define table columns for Case Config records
     columns = [
@@ -20,6 +23,24 @@ export default class CaseConfigs extends LightningElement {
         { label: 'Amount', fieldName: 'Amount__c', type: 'currency' }
     ];
     
+     // Use getRecord to get the Case Status
+     @wire(getRecord, { 
+        recordId: '$recordId', 
+        fields: [STATUS_FIELD] 
+    })
+    wiredCase({ error, data }) {
+        if (data) {
+            // Get the status value
+            const status = data.fields.Status.value;
+            
+            // Check if case is closed - adjust based on your Status picklist values
+            this.isCaseClosed = status === 'Closed';
+            console.log('Case Status:', status, 'Is Closed:', this.isCaseClosed);
+        } else if (error) {
+            console.error('Error loading case:', error);
+        }
+    }
+
     @wire(getRelatedListRecords, {
         parentRecordId: '$recordId',
         relatedListId: 'Case_Configs__r',
