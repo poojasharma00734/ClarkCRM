@@ -20,10 +20,11 @@ export default class AvailableConfigs extends LightningElement {
     ];
 
     // Fetch available Config records from Apex
-    @wire(getAvailableConfigs)
+    @wire(getAvailableConfigs, { caseId: '$recordId' })
     wiredConfigs(result) {
         this.wiredResult = result;
         if (result.data) {
+            console.log('result.data',result.data);
             this.configs = result.data;
         } else if (result.error) {
             console.error('Error fetching configs:', result.error);

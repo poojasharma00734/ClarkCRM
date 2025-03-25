@@ -1,6 +1,11 @@
 <template>
     <lightning-card title="Available Configs">
         <lightning-button label="Add Config" slot="actions" variant="brand" onclick={handleAdd}></lightning-button>
+        <template if:true={error}>
+            <div class="slds-text-color_error">
+                Error loading configs: {error.message}
+            </div>
+        </template>
         <template if:true={configs}>
             <lightning-datatable
                 key-field="Id"
