@@ -19,6 +19,7 @@ public with sharing class ConfigController {
      * @param selectedConfig List of selected Config__c records.
      */
 
+
     @AuraEnabled
     public static void addConfigsToCase(List<Case_Config__c> selectedConfig) {
         system.System.debug('select'+ selectedConfig);

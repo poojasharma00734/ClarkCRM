@@ -1,8 +1,10 @@
 import { LightningElement, wire, track, api } from 'lwc';
-import getAvailableConfigs from '@salesforce/apex/ConfigController.getAvailableConfigs';
+import getConfigs from '@salesforce/apex/ConfigController.getAvailableConfigs';
 import addConfigsToCase from '@salesforce/apex/ConfigController.addConfigsToCase';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { RefreshEvent } from "lightning/refresh";
+import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import STATUS_FIELD from '@salesforce/schema/Case.Status';
 
 export default class AvailableConfigs extends LightningElement {
     @track configs = [];  // Stores available Config__c records
@@ -10,7 +12,7 @@ export default class AvailableConfigs extends LightningElement {
     @track selectedConfigs = [];  // Stores selected Config records
     @track selectedRows = [];  // Add this property to track selected row IDs
     @api recordId;
-
+    @track isCaseClosed = false;
 
     // Define table columns for Config records
     columns = [
@@ -19,13 +21,32 @@ export default class AvailableConfigs extends LightningElement {
         { label: 'Amount', fieldName: 'Amount__c', type: 'currency' }
     ];
 
+     // Use getRecord to get the Case Status
+     @wire(getRecord, { 
+        recordId: '$recordId', 
+        fields: [STATUS_FIELD] 
+    })
+    wiredCase({ error, data }) {
+        if (data) {
+            // Get the status value
+            const status = data.fields.Status.value;
+            
+            // Check if case is closed - adjust based on your Status picklist values
+            this.isCaseClosed = status === 'Closed';
+            console.log('Case Status:', status, 'Is Closed:', this.isCaseClosed);
+        } else if (error) {
+            console.error('Error loading case:', error);
+        }
+    }
+
     // Fetch available Config records from Apex
-    @wire(getAvailableConfigs, { caseId: '$recordId' })
+    @wire(getConfigs, { caseId: '$recordId' })
     wiredConfigs(result) {
         this.wiredResult = result;
         if (result.data) {
             console.log('result.data',result.data);
             this.configs = result.data;
+            
         } else if (result.error) {
             console.error('Error fetching configs:', result.error);
         }

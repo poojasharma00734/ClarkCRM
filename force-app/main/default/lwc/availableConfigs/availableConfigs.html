@@ -1,18 +1,19 @@
 <template>
     <lightning-card title="Available Configs">
-        <lightning-button label="Add Config" slot="actions" variant="brand" onclick={handleAdd}></lightning-button>
+        <lightning-button label="Add Config" slot="actions" variant="brand" onclick={handleAdd} disabled={isCaseClosed}></lightning-button>
         <template if:true={error}>
             <div class="slds-text-color_error">
                 Error loading configs: {error.message}
             </div>
         </template>
-        <template if:true={configs}>
+        <template if:true={configs.length}>
             <lightning-datatable
                 key-field="Id"
                 data={configs}
                 columns={columns}
                 onrowselection={handleRowSelection}
-                selected-rows={selectedRows}>
+                selected-rows={selectedRows}
+                >
             </lightning-datatable>
         </template>
     </lightning-card>

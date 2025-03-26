@@ -1,11 +1,12 @@
 import { LightningElement, wire, track,api } from 'lwc';
 import { getRelatedListRecords } from 'lightning/uiRelatedListApi';
-import sendCaseData from '@salesforce/apex/CaseConfigController.sendCaseData';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { getRecord, getRecordNotifyChange } from 'lightning/uiRecordApi';
 import STATUS_FIELD from '@salesforce/schema/Case.Status';
 import { registerRefreshHandler, unregisterRefreshHandler} from 'lightning/refresh';
+import sendCaseData from '@salesforce/apex/CaseConfigController.sendCaseData';
+
 
 export default class CaseConfigs extends LightningElement {
     @api recordId;
@@ -15,6 +16,8 @@ export default class CaseConfigs extends LightningElement {
     refreshHandlerId;
     isLoading = true;
     @track isCaseClosed = false;
+    @track isProcessing = false;
+    @track resultMessage = '';
 
     // Define table columns for Case Config records
     columns = [
@@ -90,7 +93,38 @@ export default class CaseConfigs extends LightningElement {
 
     // Send Case Config data to an external system
     handleSend() {
-        console.log('record', this.recordId);
+        // Set processing state
+        this.isProcessing = true;
+        this.resultMessage = '';
+        sendCaseData({ 
+            caseId: this.recordId,
+            caseConfigs: this.configs
+        })
+        .then(result => {
+            this.isProcessing = false;
+            this.resultMessage = result;
+            console.log('result'+result)
+            // Refresh the record page to show updated status
+            if (result.startsWith('Success')) {
+                // Show success message
+                this.resultMessage = result;                
+                // Show toast notification
+                getRecordNotifyChange([{recordId: this.recordId}]);
+                // 4. Dispatch the RefreshEvent for other components to refresh
+                this.showToast('Success', 'Case data sent and case closed successfully', 'success');
+                
+            } else {
+                // Show error message
+                this.resultMessage = result;
+                this.showToast('Error', 'Failed to process case data', 'error');
+            }
+        })
+        .catch(error => {
+            this.isProcessing = false;
+            this.resultMessage = 'Error: ' + (error.body ? error.body.message : error.message);
+            this.showToast('Error', this.resultMessage, 'error');
+        });
+
     }
 
     // Helper function to show toast messages

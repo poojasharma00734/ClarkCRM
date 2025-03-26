@@ -1,73 +1,47 @@
 public with sharing class CaseConfigController {
-
-    /**
-     * Retrieves all Case_Config__c records related to a given Case.
-     * @param caseId The Id of the Case.
-     * @return List of Case_Config__c records.
-     */
-    @AuraEnabled(cacheable=true)
-    public static List<Case_Config__c> getCaseConfigs(Id caseId) {
-        return [SELECT Id, Label__c, Type__c, Amount__c FROM Case_Config__c WHERE Case__c = :caseId WITH SECURITY_ENFORCED];
-    }
-
-   
-
     /**
      * Sends the Case Config data to an external service and closes the Case.
      * @param caseId The Id of the Case to be sent.
      * @return A success or error message.
      */
     @AuraEnabled
-    public static String sendCaseData(Id caseId) {
-        if (caseId == null) {
-            return 'Invalid caseId';
+    public static String sendCaseData(Id caseId,List<Case_Config__c> caseConfigs) {
+        try {
+            // 1. Prepare the request payload
+            Map<String, Object> payload = new Map<String, Object>();
+            payload.put('caseId', caseId);
+            payload.put('status', 'Closed');
+            payload.put('caseConfigs', caseConfigs);
+            // 2. Make the callout
+            HttpResponse response = makeCallout(JSON.serialize(payload));
+            // 3. Process response
+            if (response.getStatusCode() == 200) {
+                // Update the case if callout was successful
+                Case caseToUpdate = new Case(
+                    Id = caseId,
+                    Status = 'Closed'
+                );
+                update caseToUpdate;
+                return 'Success: Case closed successfully';
+            } else {
+                return 'Error: ' + response.getStatus() + ' - ' + response.getBody();
+            }
+        }catch (Exception e) {
+            throw new AuraHandledException('Error: ' + e.getMessage());
         }
+    }
 
-        // Fetch all Case Config records for the given Case
-        List<Case_Config__c> caseConfigs = [SELECT Label__c, Type__c, Amount__c FROM Case_Config__c WHERE Case__c = :caseId];
-
-        if (caseConfigs.isEmpty()) {
-            return 'No configs to send';
-        }
-
-        // Update Case status to "Closed"
-        Case caseRecord = [SELECT Id, Status FROM Case WHERE Id = :caseId];
-        caseRecord.Status = 'Closed';
-        update caseRecord;
-
-        // Prepare JSON payload for external service
-        List<Map<String, Object>> configsList = new List<Map<String, Object>>();
-        for (Case_Config__c cc : caseConfigs) {
-            configsList.add(new Map<String, Object>{
-                'label' => cc.Label__c,
-                'type' => cc.Type__c,
-                'amount' => cc.Amount__c
-            });
-        }
-
-        Map<String, Object> payload = new Map<String, Object>{
-            'caseId' => caseId,
-            'status' => 'Closed',
-            'caseConfigs' => configsList
-        };
-
-        // HTTP Request to External API
+    private static HttpResponse makeCallout(String jsonPayload) {
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        request.setEndpoint('https://requestcatcher.com/'); 
+        
+        // Configure your endpoint
+        request.setEndpoint('https://clarkcrm.requestcatcher.com/test');
         request.setMethod('POST');
         request.setHeader('Content-Type', 'application/json');
-        request.setBody(JSON.serialize(payload));
-
-        try {
-            HttpResponse response = http.send(request);
-            if (response.getStatusCode() == 200) {
-                return 'Success';
-            } else {
-                return 'Error: ' + response.getBody();
-            }
-        } catch (Exception e) {
-            return 'Error: ' + e.getMessage();
-        }
+        request.setBody(jsonPayload);
+        // Set timeout (in milliseconds)
+        request.setTimeout(120000);
+        return http.send(request);
     }
 }
