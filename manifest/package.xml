@@ -8,7 +8,8 @@
         <name>CustomObject</name>
     </types>
     <types>
-         <members>*</members>
+         <members>Case_Config__c</members>
+         <members>Config__c</members>
         <name>CustomTab</name>
     </types>
      <types>
