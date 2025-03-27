@@ -85,7 +85,6 @@ Repository link - https://github.com/poojasharma00734/ClarkCRM
 | Case_Config__c | CustomObject |
 | Config__c | CustomObject  |
 | API_Endpoint__c | Custom Setting  |
-| Config__c | CustomObject  |
 | Config__c-Config Layout | Page Layout  |
 | Case_Config__c-Case Config Layout | Page Layout  |
 
