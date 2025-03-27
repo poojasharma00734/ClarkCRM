@@ -28,6 +28,8 @@ should see two custom related lists on the detail page Case:
     - Coding standrd to follow for error and exceptions handling
     - Use of standard methods and SLDS classes example "lightning/uiRelatedListApi" to avoid SOQL query or 'lightning/refresh' for refresh communication to other component.
     - Avoid unnessary code logics or debugs
+    - Errors of the external system handled
+
 
 ## Security Consderations/Assumptions
 
@@ -38,6 +40,21 @@ should see two custom related lists on the detail page Case:
 - There is a permission set named "CaseConfigPermission" also created if someone needs access to configurations this permission can be assigned.
 - Test Classes Coverage are CaseConfigController 92% and ConfigController 100% and it covered all the negative and positive scenarios
 - Not much effort on Page layouts but based on the need Config fields are required on the page layout.
+- Once the case is closed both "Add" and "Send" button are disabled for any action.
+- Case config list is always read only as it will only used for sending the data to external service.
+- The Objects have Name standard fields which i left as text but it cna be also used as Auto Number as Lable is a uniqeue field.
+- Type could be better used as picklist as it could lead as a mistake , i have made this as Text field but better suggestion to be used as Picklist.
+- No need to make Case Config Object field as Unique field from the field definition as if the field is Unique it will not allow other records to be inserted on the same object which will block the purpose , ideally Case Config should be read only object only inserted by the automations.
+
+
+## Optional Requirements:
+1. Sort records by any column in Available Configs and Case Configs components.
+2. Add pagination in the Available Configs component (there can be more than 200 records).
+
+ First 2 we can discuss during further discussion as there are number of ways we can achieve these 2 with soring and infinite scrolling or GrapghQL
+
+3. How would you split the above user story into tasks? Please include it in the Readme.
+ - Added in the readme
 
 | Test Class  | Coverage |
 | ------------- | ------------- |
