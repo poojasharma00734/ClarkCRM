@@ -13,15 +13,18 @@ should see two custom related lists on the detail page Case:
 # Requiremente can be divided into tasks
 
 1. Setup object struture to store Config and Case config with reuqired fields and FLS.
+
 2. A lwc component which shows the Available configs on the case Page 
     - Showing 3 columns and a Add button with the available config records
     - Once a config records is added to Case config the Available config disappears , we can make it ready only as well but for better solution suggestion would be hide it from available configs.
     - Once "Add" button is clicked the case configs will be displayed on Case config component without refreshing the page as per the requirements.
+
 3. A lwc component which displays the case configs on the case Page 
     - Showing 3 columns and a "Send Case" with the case configs records related to case
     - As requirement says , Sets the status of the Case to “Closed” then request is sent to the external service but the best solution would be when the request is sent successfully then case should be closed not vice versa else case would be closed even if the request is failed.
     - Another problem would be Mixed DML exception , as DML before callout is not permitted additionally if we use asynchronous methods then case would be updated to closed and we would not be able to control the Request outcome and DML dependency.
 4. Endpoint URL at "https://clarkcrm.requestcatcher.com/test"
+
 5. Best Practices to followed
     - Good test class coveragee
     - No Hard coding and End point to custom setting
@@ -44,7 +47,13 @@ should see two custom related lists on the detail page Case:
 - Case config list is always read only as it will only used for sending the data to external service.
 - The Objects have Name standard fields which i left as text but it cna be also used as Auto Number as Lable is a uniqeue field.
 - Type could be better used as picklist as it could lead as a mistake , i have made this as Text field but better suggestion to be used as Picklist.
-- No need to make Case Config Object field as Unique field from the field definition as if the field is Unique it will not allow other records to be inserted on the same object which will block the purpose , ideally Case Config should be read only object only inserted by the automations.
+
+- In the requirements its mentioned to create Label as Unique fields on Case Config there could be different approached we can take
+    1. If we make Label as Unique then the Case Lookup on Case Config will not jutify the use as being a unique field Case config will not get inserted on Another cases due to its unique validation, to achive this best option to makee it non-Unique and Make sure Available config is not visible or marked as read only after "add" button clicked on Config Related list on the Case record page so same config can not be added to again to the same case and no need to add validation logics in APEX will reduce the processing time.
+    2. If we need to make this Label field as Unique then option will be to go with Junction object which will work as Junction between Case and Inserted Case Config , in this case we can not make it as case lookup rather it should be master details , but in this we need to perform the DML twice , one to insert the Case Config and then to insert the junction Object.
+    3. Junction between Available Config and Case , as if we make Case Config as junction object between Case and Available Config, it will again needs to be as master detail and everytime user add Available config to Case it will insert a record as junction object for Case Config but it will be almost similar solution as 1 and does not yield much benifits.
+
+No need to make Case Config Object field as Unique field from the field definition as if the field is Unique it will not allow other records to be inserted on the same object which will block the purpose , ideally Case Config should be read only object only inserted by the automations.
 
 
 ## Optional Requirements:
@@ -85,6 +94,7 @@ Repository link - https://github.com/poojasharma00734/ClarkCRM
 | Case_Config__c | CustomObject |
 | Config__c | CustomObject  |
 | API_Endpoint__c | Custom Setting  |
+| Config__c | CustomObject  |
 | Config__c-Config Layout | Page Layout  |
 | Case_Config__c-Case Config Layout | Page Layout  |
 
@@ -107,19 +117,3 @@ The `sfdx-project.json` file contains useful configuration information for your 
 - [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
 - [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
 - [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
-
-
-
-## Setup and Project initialization
-
-For this I have Created a new SFDX Project and Initialize d a private GitHub repository and push the SFDX project. Committed initial project setup.
-
-## Create Objects and Fields
-
-For this I have created two objects with some fields, the list is given below:
-
-Object	        Fields
-Config__c		Lable, Type, Amount
-Case_Config__c	Lable, Type, Amount, Case__c (Lookup)
-
-## 
