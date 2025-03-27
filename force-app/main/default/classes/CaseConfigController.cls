@@ -34,9 +34,9 @@ public with sharing class CaseConfigController {
     private static HttpResponse makeCallout(String jsonPayload) {
         Http http = new Http();
         HttpRequest request = new HttpRequest();
-        
+        API_Endpoint__c endpoint = API_Endpoint__c.getInstance('Config EndPoint');
         // Configure your endpoint
-        request.setEndpoint('https://clarkcrm.requestcatcher.com/test');
+        request.setEndpoint(endpoint.EndPointURL__c);
         request.setMethod('POST');
         request.setHeader('Content-Type', 'application/json');
         request.setBody(jsonPayload);
