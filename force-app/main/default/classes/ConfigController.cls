@@ -1,4 +1,5 @@
 public with sharing class ConfigController {
+    
     @AuraEnabled(cacheable=true)
     public static List<Config__c> getAvailableConfigs(Id caseId) {
         Set<String> existingConfigLabels = new Set<String>();
@@ -11,7 +12,7 @@ public with sharing class ConfigController {
                 FROM Config__c 
                 WHERE Label__c NOT IN :existingConfigLabels WITH SECURITY_ENFORCED];
     }
-
+    
      /**
      * Adds selected Config__c records to the Case_Config__c related list.
      * Prevents duplicate Configs from being added.

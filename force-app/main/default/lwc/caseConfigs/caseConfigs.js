@@ -7,7 +7,6 @@ import STATUS_FIELD from '@salesforce/schema/Case.Status';
 import { registerRefreshHandler, unregisterRefreshHandler} from 'lightning/refresh';
 import sendCaseData from '@salesforce/apex/CaseConfigController.sendCaseData';
 
-
 export default class CaseConfigs extends LightningElement {
     @api recordId;
     @track caseConfigs = [];  // Stores Case_Config__c records related to the case
@@ -127,7 +126,6 @@ export default class CaseConfigs extends LightningElement {
     }else{
         this.showToast('Error', "There are no Case Config to Send", 'error');
     }
-
     }
 
     // Helper function to show toast messages
@@ -139,6 +137,5 @@ export default class CaseConfigs extends LightningElement {
     handleRefresh() {
         return refreshApex(this.wiredResult);
     }
-
     
 }

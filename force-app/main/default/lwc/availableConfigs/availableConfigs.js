@@ -11,7 +11,7 @@ export default class AvailableConfigs extends LightningElement {
     @track configs = [];  // Stores available Config__c records
     wiredResult;
     @track selectedConfigs = [];  // Stores selected Config records
-    @track selectedRows = [];  // Add this property to track selected row IDs
+    @track selectedRowsID = [];  // Add this property to track selected row IDs
     @api recordId;
     @track isCaseClosed = false;
 
@@ -45,7 +45,6 @@ export default class AvailableConfigs extends LightningElement {
     wiredConfigs(result) {
         this.wiredResult = result;
         if (result.data) {
-            console.log('result.data',result.data);
             this.configs = result.data;
             
         } else if (result.error) {
@@ -56,6 +55,7 @@ export default class AvailableConfigs extends LightningElement {
     // Capture selected rows in the table
     handleRowSelection(event) {
         const selectedRows = event.detail.selectedRows;
+        this.selectedRowsID = selectedRows.map(row => row.Id);
         const caseIdValue = this.recordId;
         const formattedRows = selectedRows.map(row => {
             // Only include fields that exist on Case_Config__c
@@ -76,14 +76,16 @@ export default class AvailableConfigs extends LightningElement {
             addConfigsToCase({selectedConfig: this.selectedConfigs })
                 .then(() => {
                     this.showToast('Success', 'Configs added to Case successfully!', 'success');
-                    this.selectedConfigs = [];
-                    this.selectedRows = [];
-                   // Refresh this component to refresh the  items from the list
-                    return refreshApex(this.configs);
-                })
-                .then(() => {
-                    // Dispatch RefreshEvent to notify Case Config Component to refresh
-                    this.dispatchEvent(new RefreshEvent());
+                    this.configs = this.configs.filter(row => !this.selectedRowsID.includes(row.Id));
+                    console.log(this.configs.length);
+                    if(this.configs.length === 0){
+                        this.isCaseClosed=true;
+                    }
+                    // Clear selection
+                    this.selectedRowIds = [];
+                    this.template.querySelector('lightning-datatable').selectedRows = [];
+                // Dispatch RefreshEvent to notify Case Config Component to refresh
+                this.dispatchEvent(new RefreshEvent());
                 })
                 .catch(error => {
                     console.error('Error adding Configs to Case: ', error);
@@ -99,4 +101,8 @@ export default class AvailableConfigs extends LightningElement {
         const evt = new ShowToastEvent({ title, message, variant });
         this.dispatchEvent(evt);
     }
+        // Method to refresh data
+        refreshData() {
+            refreshApex(this.configs);
+        }
 }

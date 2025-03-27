@@ -1,6 +1,6 @@
 <template>
-    <lightning-card title="Available Configs">
-        <lightning-button label="Add Config" slot="actions" variant="brand" onclick={handleAdd} disabled={isCaseClosed}></lightning-button>
+    <lightning-card title="Available Configs" icon-name="standard:account" variant="Narrow">
+        <lightning-button label="Add Config" slot="actions" variant="brand" onclick={handleAdd} disabled={isCaseClosed} ></lightning-button>
         <template if:true={error}>
             <div class="slds-text-color_error">
                 Error loading configs: {error.message}
@@ -12,7 +12,6 @@
                 data={configs}
                 columns={columns}
                 onrowselection={handleRowSelection}
-                selected-rows={selectedRows}
                 >
             </lightning-datatable>
         </template>

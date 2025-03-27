@@ -3,7 +3,7 @@
         <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
     </div>
     <div if:true={isProcessing} class="slds-is-relative">
-    <lightning-card title="Case Configs">
+    <lightning-card title="Case Configs" icon-name="standard:account" variant="Narrow">
         <lightning-button label="Send Case Data" slot="actions" variant="brand" onclick={handleSend} disabled={isCaseClosed}></lightning-button>
         <template if:true={caseConfigs.length}>
             <lightning-datatable
