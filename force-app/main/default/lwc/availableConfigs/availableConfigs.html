@@ -16,5 +16,8 @@
                 >
             </lightning-datatable>
         </template>
+        <template if:false={configs.length}>
+            <p>No Configuration Available to add on Case</p>
+        </template>
     </lightning-card>
 </template>

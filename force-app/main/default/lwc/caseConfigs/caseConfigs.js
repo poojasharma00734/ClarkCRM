@@ -10,13 +10,12 @@ import sendCaseData from '@salesforce/apex/CaseConfigController.sendCaseData';
 
 export default class CaseConfigs extends LightningElement {
     @api recordId;
-    @track configs = [];  // Stores Case_Config__c records related to the case
+    @track caseConfigs = [];  // Stores Case_Config__c records related to the case
     error;
     wiredResult;
     refreshHandlerId;
-    isLoading = true;
     @track isCaseClosed = false;
-    @track isProcessing = false;
+    @track isProcessing = true;
     @track resultMessage = '';
 
     // Define table columns for Case Config records
@@ -52,17 +51,15 @@ export default class CaseConfigs extends LightningElement {
     })
     wiredCaseConfigs(result) {
         this.wiredResult = result;
-        this.isLoading = true;
         if (result.data) {
-          this.configs = this.transformData(result.data); 
+          this.caseConfigs = this.transformData(result.data); 
           this.error = undefined;
         } else if (result.error) {
         console.error('Error fetching case configs:', result.error);
           this.error = result.error;
-          this.configs = [];
+          this.caseConfigs = [];
 
         }
-        this.isLoading = false;
       }
       transformData(data) {
         // Map the API response to match your column structure
@@ -94,11 +91,12 @@ export default class CaseConfigs extends LightningElement {
     // Send Case Config data to an external system
     handleSend() {
         // Set processing state
+        if (this.caseConfigs.length > 0){
         this.isProcessing = true;
         this.resultMessage = '';
         sendCaseData({ 
             caseId: this.recordId,
-            caseConfigs: this.configs
+            caseConfigs: this.caseConfigs
         })
         .then(result => {
             this.isProcessing = false;
@@ -112,18 +110,23 @@ export default class CaseConfigs extends LightningElement {
                 getRecordNotifyChange([{recordId: this.recordId}]);
                 // 4. Dispatch the RefreshEvent for other components to refresh
                 this.showToast('Success', 'Case data sent and case closed successfully', 'success');
+                this.isProcessing = true;
                 
             } else {
                 // Show error message
                 this.resultMessage = result;
                 this.showToast('Error', 'Failed to process case data', 'error');
+                this.isProcessing = true;
             }
         })
         .catch(error => {
-            this.isProcessing = false;
+            this.isProcessing = true;
             this.resultMessage = 'Error: ' + (error.body ? error.body.message : error.message);
             this.showToast('Error', this.resultMessage, 'error');
         });
+    }else{
+        this.showToast('Error', "There are no Case Config to Send", 'error');
+    }
 
     }
 

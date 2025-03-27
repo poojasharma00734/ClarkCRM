@@ -16,3 +16,19 @@ The `sfdx-project.json` file contains useful configuration information for your 
 - [Salesforce CLI Setup Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_setup.meta/sfdx_setup/sfdx_setup_intro.htm)
 - [Salesforce DX Developer Guide](https://developer.salesforce.com/docs/atlas.en-us.sfdx_dev.meta/sfdx_dev/sfdx_dev_intro.htm)
 - [Salesforce CLI Command Reference](https://developer.salesforce.com/docs/atlas.en-us.sfdx_cli_reference.meta/sfdx_cli_reference/cli_reference.htm)
+
+
+
+## Setup and Project initialization
+
+For this I have Created a new SFDX Project and Initialize d a private GitHub repository and push the SFDX project. Committed initial project setup.
+
+## Create Objects and Fields
+
+For this I have created two objects with some fields, the list is given below:
+
+Object	        Fields
+Config__c		Lable, Type, Amount
+Case_Config__c	Lable, Type, Amount, Case__c (Lookup)
+
+## 

@@ -3,7 +3,8 @@ import getConfigs from '@salesforce/apex/ConfigController.getAvailableConfigs';
 import addConfigsToCase from '@salesforce/apex/ConfigController.addConfigsToCase';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { RefreshEvent } from "lightning/refresh";
-import { getRecord, getFieldValue } from 'lightning/uiRecordApi';
+import { refreshApex } from '@salesforce/apex';
+import { getRecord } from 'lightning/uiRecordApi';
 import STATUS_FIELD from '@salesforce/schema/Case.Status';
 
 export default class AvailableConfigs extends LightningElement {
@@ -77,7 +78,11 @@ export default class AvailableConfigs extends LightningElement {
                     this.showToast('Success', 'Configs added to Case successfully!', 'success');
                     this.selectedConfigs = [];
                     this.selectedRows = [];
-                    // Dispatch the RefreshEvent to notify other components
+                   // Refresh this component to refresh the  items from the list
+                    return refreshApex(this.configs);
+                })
+                .then(() => {
+                    // Dispatch RefreshEvent to notify Case Config Component to refresh
                     this.dispatchEvent(new RefreshEvent());
                 })
                 .catch(error => {

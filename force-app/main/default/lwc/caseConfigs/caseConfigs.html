@@ -1,14 +1,23 @@
 <template>
+    <div if:false={isProcessing} class="slds-is-relative">
+        <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+    </div>
+    <div if:true={isProcessing} class="slds-is-relative">
     <lightning-card title="Case Configs">
         <lightning-button label="Send Case Data" slot="actions" variant="brand" onclick={handleSend} disabled={isCaseClosed}></lightning-button>
-        <template if:true={configs}>
+        <template if:true={caseConfigs.length}>
             <lightning-datatable
                 key-field="Id"
-                data={configs}
+                data={caseConfigs}
                 columns={columns}
                 hide-checkbox-column="true"
                 >
             </lightning-datatable>
         </template>
+        <template if:false={caseConfigs.length}>
+            <p>No Case Configuration added to the case</p>
+        </template>
     </lightning-card>
+    </div>
+
 </template>
