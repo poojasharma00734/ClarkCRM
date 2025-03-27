@@ -47,6 +47,7 @@ should see two custom related lists on the detail page Case:
 - Case config list is always read only as it will only used for sending the data to external service.
 - The Objects have Name standard fields which i left as text but it cna be also used as Auto Number as Lable is a uniqeue field.
 - Type could be better used as picklist as it could lead as a mistake , i have made this as Text field but better suggestion to be used as Picklist.
+- Once the Available configs are selected and "Add" button is clicked , the current approach is removing them from the Avilable Config UI and Adding them to Case Config without the need of page refresh , other option could be explored to disabled the selected row when succesfully added to Case Config.
 
 - In the requirements its mentioned to create Label as Unique fields on Case Config there could be different approached we can take
     1. If we make Label as Unique then the Case Lookup on Case Config will not jutify the use as being a unique field Case config will not get inserted on Another cases due to its unique validation, to achive this best option to makee it non-Unique and Make sure Available config is not visible or marked as read only after "add" button clicked on Config Related list on the Case record page so same config can not be added to again to the same case and no need to add validation logics in APEX will reduce the processing time.
